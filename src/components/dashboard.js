@@ -1,17 +1,470 @@
-'use client';
-import {AreaChart,Area,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,BarChart,Bar} from 'recharts';
-import {ArrowUpRight,ArrowRight,Users,UserPlus,CalendarClock,Clock,Phone,CheckCircle2,TrendingUp,Target,Trophy,ChevronRight,Plus} from 'lucide-react';
-import {StatCard,UserAvatar,ProgressBar,StatusBadge,DataTable} from './ui';
-import {money,shortMoney,rankExecutives,chartData} from '@/lib/data';
-export function SalesChart({period='This Month'}) {const multiplier=period==='Today'?.12:period==='This Week'?.35:1;return <ResponsiveContainer width="100%" height={225}><AreaChart data={chartData.map(x=>({...x,sales:Math.round(x.sales*multiplier),target:Math.round(x.target*multiplier)}))} margin={{top:15,right:10,left:-25,bottom:0}}><CartesianGrid strokeDasharray="3 4" vertical={false} stroke="#e8edf3"/><XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize:12,fill:'#78879a'}} minTickGap={20}/><YAxis axisLine={false} tickLine={false} tick={{fontSize:12,fill:'#78879a'}} tickFormatter={v=>`₹${v}L`}/><Tooltip formatter={v=>`₹${v}L`} contentStyle={{borderRadius:8,fontSize:13,borderColor:'#dbe4ee'}}/><Area type="monotone" dataKey="target" stroke="#c29a58" strokeDasharray="5 5" fill="transparent" strokeWidth={1.5}/><Area type="monotone" dataKey="sales" stroke="#315d8c" fill="#eaf1f8" strokeWidth={2.5}/></AreaChart></ResponsiveContainer>}
-export function TargetCard({person}) {const pct=Math.round(person.sales/person.target*100);return <section className="card target-card"><div className="section-heading"><h2><Target size={16}/> My monthly target</h2><span className="muted">September 2026</span></div><div className="target-total">{shortMoney(person.sales)} <span>/ {shortMoney(person.target)}</span><b>{pct}%</b></div><ProgressBar value={pct}/><div className="target-caption"><span>{pct>=100?'Target achieved':`${shortMoney(person.target-person.sales)} remaining`}</span><span>Position <strong>#4</strong></span></div><div className="target-note"><TrendingUp size={16}/>{pct>=100?`${money(person.sales-person.target)} above target`:'You’re making great progress. Keep it going!'}</div></section>}
-export function LeaderboardRow({person,index}) {const pct=Math.round(person.sales/person.target*100);return <div className="leaderboard-row"><span className={`rank ${index<3?'top-rank':''}`}>{String(index+1).padStart(2,'0')}</span><UserAvatar name={person.name} index={index}/><div className="leader-person"><strong>{person.short}</strong><small>{shortMoney(person.sales)} <span>/ {shortMoney(person.target)}</span></small></div><div className="leader-progress"><strong>{pct}% {pct>=100&&<CheckCircle2 size={12}/>}</strong><ProgressBar value={pct}/></div></div>}
-export function Leaderboard({people,navigate}) {return <section className="card leaderboard-card"><div className="section-heading"><h2><Trophy size={17}/> Sales leaderboard</h2><span className="tiny-tag">THIS MONTH</span></div><p className="section-subtitle">A little recognition for exceptional work.</p>{rankExecutives(people).slice(0,5).map((p,i)=><LeaderboardRow key={p.id} person={p} index={i}/>)}<button className="card-link" onClick={()=>navigate('leaderboard')}>View full leaderboard <ArrowRight size={14}/></button></section>}
-export default function Dashboard({role,leads,people,followups,navigate,openModal,period}) {const scoped=role==='Sales Executive'||role==='Team Leader';const factor=period==='Today'?1:period==='This Week'?4:12;const stats=[['Total leads',scoped?leads.length:1248,'12.8%',Users],['New leads',scoped?leads.filter(l=>l.status==='New').length:48*factor,'18.4%',UserPlus],['Follow-ups today',followups.filter(f=>!f.completed&&f.date==='2026-09-28').length,'8.2%',CalendarClock],['Overdue follow-ups',followups.filter(f=>!f.completed&&f.date<'2026-09-28').length,'2.1%',Clock],['Calls today',scoped?leads.length*3:86,'16.2%',Phone],['Converted leads',scoped?leads.filter(l=>l.status==='Won').length:32*factor,'24.6%',CheckCircle2]];if(role==='HR')return <><div className="stats-grid four">{[['Team members',11],['Active employees',11],['Open tasks',3],['Team leaders',3]].map(([label,value])=><StatCard key={label} label={label} value={value} icon={Users} change="This month" showComparison={false}/>)}</div><div className="dashboard-main"><section className="card"><div className="section-heading"><div><h2>Your people, at a glance</h2><p className="section-subtitle">Employee information and basic performance.</p></div><button onClick={()=>navigate('team')}>View team <ArrowRight size={14}/></button></div><DataTable rows={people.slice(0,6)} columns={[{key:'name',label:'Employee',render:r=><div className="person-cell"><UserAvatar name={r.name}/><strong>{r.name}</strong></div>},{key:'team',label:'Team'},{key:'conversions',label:'Conversions'},{key:'status',label:'Status',render:()=> <StatusBadge status="Active"/>}]}/><button className="card-link" onClick={()=>navigate('tasks')}>Review 3 employee tasks <ArrowRight size={14}/></button></section><Leaderboard people={people} navigate={navigate}/></div></>;return <><div className="overview-label"><span>BUSINESS OVERVIEW</span><span className="live-dot"/> Live overview <small>Updated just now</small></div><div className="stats-grid dashboard-stats">{stats.map(([label,value,change,icon],i)=><StatCard key={label} label={label} value={value} change={change} icon={icon} negative={i===3}/>)}</div>{role==='Sales Executive'&&<TargetCard person={people.find(x=>x.id===4)}/>}
-<div className="dashboard-main"><section className="card sales-card"><div className="section-heading"><div><h2>Sales overview</h2><p className="section-subtitle">Your revenue performance at a glance</p></div><select aria-label="Sales overview metric"><option>Revenue</option><option>Sales achieved</option></select></div><div className="revenue-line"><strong>₹26,90,000</strong><span className="positive"><ArrowUpRight size={13}/>18.6%</span><small>vs. last month</small><div className="chart-legend"><span><i/>Achieved</span><span><i/>Target</span></div></div><SalesChart period={period}/><div className="chart-footer"><span>Monthly target <strong>₹36,00,000</strong></span><span><span className="positive">74.7%</span> of target achieved</span></div></section><Leaderboard people={people} navigate={navigate}/></div>
-<div className="dashboard-bottom"><section className="card followup-card"><div className="section-heading"><div><h2>Today’s follow-ups <span className="count-pill">{followups.filter(x=>!x.completed&&x.date==='2026-09-28').length}</span></h2><p className="section-subtitle">A timely conversation makes all the difference.</p></div><button className="text-button" onClick={()=>navigate('follow-ups')}>View all <ArrowUpRight size={14}/></button></div><DataTable columns={[{key:'name',label:'CUSTOMER',render:r=><div className="person-cell"><UserAvatar name={r.name}/><div><strong>{r.name}</strong><small>{r.service}</small></div></div>},{key:'time',label:'SCHEDULE',render:r=><div><strong>{r.time}</strong><small>Today</small></div>},{key:'purpose',label:'PURPOSE'},{key:'action',label:'',render:r=><button className="small-button" onClick={()=>openModal({type:'followup',record:r})}><Phone size={13}/> Follow up</button>}]} rows={followups.filter(x=>!x.completed&&x.date==='2026-09-28').slice(0,3)}/></section><section className="card pipeline-summary"><div className="section-heading"><h2>Pipeline snapshot</h2><button className="icon-button" aria-label="Open pipeline" onClick={()=>navigate('pipeline')}><ArrowUpRight size={16}/></button></div><div className="pipeline-total"><strong>₹48.6L</strong><span>across 186 active opportunities</span></div><div className="stacked-bar">{[28,22,18,20,12].map((x,i)=><span key={i} style={{width:x+'%',background:['#315d8c','#6085ab','#c29a58','#8fad9f','#dce5ef'][i]}}/>)}</div>{[['New leads',52,'₹12.4L'],['Contacted',41,'₹10.2L'],['Interested',34,'₹9.8L'],['Quotation',37,'₹11.6L']].map(([name,count,amount],i)=><div className="pipeline-line" key={name}><i style={{background:['#315d8c','#6085ab','#c29a58','#8fad9f'][i]}}/><span>{name}</span><small>{count}</small><strong>{amount}</strong></div>)}</section></div><div className="workspace-footer"><span><span className="live-dot"/> All systems operational</span><span>ENTRAIN CRM · Your growth, in focus.</span></div></>}
-
-
-
-
-
+"use client";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
+import {
+  ArrowUpRight,
+  ArrowRight,
+  Users,
+  UserPlus,
+  CalendarClock,
+  Clock,
+  Phone,
+  CheckCircle2,
+  TrendingUp,
+  Target,
+  Trophy,
+  ChevronRight,
+  Plus,
+} from "lucide-react";
+import {
+  StatCard,
+  UserAvatar,
+  ProgressBar,
+  StatusBadge,
+  DataTable,
+} from "./ui";
+import { money, shortMoney, rankExecutives, chartData } from "@/lib/data";
+export function SalesChart({ period = "This Month" }) {
+  const multiplier =
+    period === "Today" ? 0.12 : period === "This Week" ? 0.35 : 1;
+  return (
+    <ResponsiveContainer width="100%" height={225}>
+      <AreaChart
+        data={chartData.map((x) => ({
+          ...x,
+          sales: Math.round(x.sales * multiplier),
+          target: Math.round(x.target * multiplier),
+        }))}
+        margin={{ top: 15, right: 10, left: -25, bottom: 0 }}
+      >
+        <CartesianGrid
+          strokeDasharray="3 4"
+          vertical={false}
+          stroke="#e8edf3"
+        />
+        <XAxis
+          dataKey="day"
+          axisLine={false}
+          tickLine={false}
+          tick={{ fontSize: 12, fill: "#78879a" }}
+          minTickGap={20}
+        />
+        <YAxis
+          axisLine={false}
+          tickLine={false}
+          tick={{ fontSize: 12, fill: "#78879a" }}
+          tickFormatter={(v) => `₹${v}L`}
+        />
+        <Tooltip
+          formatter={(v) => `₹${v}L`}
+          contentStyle={{
+            borderRadius: 8,
+            fontSize: 13,
+            borderColor: "#dbe4ee",
+          }}
+        />
+        <Area
+          type="monotone"
+          dataKey="target"
+          stroke="#c29a58"
+          strokeDasharray="5 5"
+          fill="transparent"
+          strokeWidth={1.5}
+        />
+        <Area
+          type="monotone"
+          dataKey="sales"
+          stroke="#315d8c"
+          fill="#eaf1f8"
+          strokeWidth={2.5}
+        />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+}
+export function TargetCard({ person }) {
+  const pct = Math.round((person.sales / person.target) * 100);
+  return (
+    <section className="card target-card">
+      <div className="section-heading">
+        <h2>
+          <Target size={16} /> My monthly target
+        </h2>
+        <span className="muted">September 2026</span>
+      </div>
+      <div className="target-total">
+        {shortMoney(person.sales)} <span>/ {shortMoney(person.target)}</span>
+        <b>{pct}%</b>
+      </div>
+      <ProgressBar value={pct} />
+      <div className="target-caption">
+        <span>
+          {pct >= 100
+            ? "Target achieved"
+            : `${shortMoney(person.target - person.sales)} remaining`}
+        </span>
+        <span>
+          Position <strong>#4</strong>
+        </span>
+      </div>
+      <div className="target-note">
+        <TrendingUp size={16} />
+        {pct >= 100
+          ? `${money(person.sales - person.target)} above target`
+          : "You’re making great progress. Keep it going!"}
+      </div>
+    </section>
+  );
+}
+export function LeaderboardRow({ person, index }) {
+  const pct = Math.round((person.sales / person.target) * 100);
+  return (
+    <div className="leaderboard-row">
+      <span className={`rank ${index < 3 ? "top-rank" : ""}`}>
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <UserAvatar name={person.name} index={index} />
+      <div className="leader-person">
+        <strong>{person.short}</strong>
+        <small>
+          {shortMoney(person.sales)} <span>/ {shortMoney(person.target)}</span>
+        </small>
+      </div>
+      <div className="leader-progress">
+        <strong>
+          {pct}% {pct >= 100 && <CheckCircle2 size={12} />}
+        </strong>
+        <ProgressBar value={pct} />
+      </div>
+    </div>
+  );
+}
+export function Leaderboard({ people, navigate }) {
+  return (
+    <section className="card leaderboard-card">
+      <div className="section-heading">
+        <h2>
+          <Trophy size={17} /> Sales leaderboard
+        </h2>
+        <span className="tiny-tag">THIS MONTH</span>
+      </div>
+      <p className="section-subtitle">
+        A little recognition for exceptional work.
+      </p>
+      {rankExecutives(people)
+        .slice(0, 5)
+        .map((p, i) => (
+          <LeaderboardRow key={p.id} person={p} index={i} />
+        ))}
+      <button className="card-link" onClick={() => navigate("leaderboard")}>
+        View full leaderboard <ArrowRight size={14} />
+      </button>
+    </section>
+  );
+}
+export default function Dashboard({
+  role,
+  leads,
+  people,
+  followups,
+  navigate,
+  openModal,
+  period,
+}) {
+  const scoped = role === "Sales Executive" || role === "Team Leader";
+  const factor = period === "Today" ? 1 : period === "This Week" ? 4 : 12;
+  const stats = [
+    ["Total leads", scoped ? leads.length : 1248, "12.8%", Users],
+    [
+      "New leads",
+      scoped ? leads.filter((l) => l.status === "New").length : 48 * factor,
+      "18.4%",
+      UserPlus,
+    ],
+    [
+      "Follow-ups today",
+      followups.filter((f) => !f.completed && f.date === "2026-09-28").length,
+      "8.2%",
+      CalendarClock,
+    ],
+    [
+      "Overdue follow-ups",
+      followups.filter((f) => !f.completed && f.date < "2026-09-28").length,
+      "2.1%",
+      Clock,
+    ],
+    ["Calls today", scoped ? leads.length * 3 : 86, "16.2%", Phone],
+    [
+      "Converted leads",
+      scoped ? leads.filter((l) => l.status === "Won").length : 32 * factor,
+      "24.6%",
+      CheckCircle2,
+    ],
+  ];
+  if (role === "HR")
+    return (
+      <>
+        <div className="stats-grid four">
+          {[
+            ["Team members", 11],
+            ["Active employees", 11],
+            ["Open tasks", 3],
+            ["Team leaders", 3],
+          ].map(([label, value]) => (
+            <StatCard
+              key={label}
+              label={label}
+              value={value}
+              icon={Users}
+              change="This month"
+              showComparison={false}
+            />
+          ))}
+        </div>
+        <div className="dashboard-main">
+          <section className="card">
+            <div className="section-heading">
+              <div>
+                <h2>Your people, at a glance</h2>
+                <p className="section-subtitle">
+                  Employee information and basic performance.
+                </p>
+              </div>
+              <button onClick={() => navigate("team")}>
+                View team <ArrowRight size={14} />
+              </button>
+            </div>
+            <DataTable
+              rows={people.slice(0, 6)}
+              columns={[
+                {
+                  key: "name",
+                  label: "Employee",
+                  render: (r) => (
+                    <div className="person-cell">
+                      <UserAvatar name={r.name} />
+                      <strong>{r.name}</strong>
+                    </div>
+                  ),
+                },
+                { key: "team", label: "Team" },
+                { key: "conversions", label: "Conversions" },
+                {
+                  key: "status",
+                  label: "Status",
+                  render: () => <StatusBadge status="Active" />,
+                },
+              ]}
+            />
+            <button className="card-link" onClick={() => navigate("tasks")}>
+              Review 3 employee tasks <ArrowRight size={14} />
+            </button>
+          </section>
+          <Leaderboard people={people} navigate={navigate} />
+        </div>
+      </>
+    );
+  return (
+    <>
+      <div className="overview-label">
+        <span>BUSINESS OVERVIEW</span>
+        <span className="live-dot" /> Live overview{" "}
+        <small>Updated just now</small>
+      </div>
+      <div className="stats-grid dashboard-stats">
+        {stats.map(([label, value, change, icon], i) => (
+          <StatCard
+            key={label}
+            label={label}
+            value={value}
+            change={change}
+            icon={icon}
+            negative={i === 3}
+          />
+        ))}
+      </div>
+      {role === "Sales Executive" && (
+        <TargetCard person={people.find((x) => x.id === 4)} />
+      )}
+      <div className="dashboard-main">
+        <section className="card sales-card">
+          <div className="section-heading">
+            <div>
+              <h2>Sales overview</h2>
+              <p className="section-subtitle">
+                Your revenue performance at a glance
+              </p>
+            </div>
+            <select aria-label="Sales overview metric">
+              <option>Revenue</option>
+              <option>Sales achieved</option>
+            </select>
+          </div>
+          <div className="revenue-line">
+            <strong>₹26,90,000</strong>
+            <span className="positive">
+              <ArrowUpRight size={13} />
+              18.6%
+            </span>
+            <small>vs. last month</small>
+            <div className="chart-legend">
+              <span>
+                <i />
+                Achieved
+              </span>
+              <span>
+                <i />
+                Target
+              </span>
+            </div>
+          </div>
+          <SalesChart period={period} />
+          <div className="chart-footer">
+            <span>
+              Monthly target <strong>₹36,00,000</strong>
+            </span>
+            <span>
+              <span className="positive">74.7%</span> of target achieved
+            </span>
+          </div>
+        </section>
+        <Leaderboard people={people} navigate={navigate} />
+      </div>
+      <div className="dashboard-bottom">
+        <section className="card followup-card">
+          <div className="section-heading">
+            <div>
+              <h2>
+                Today’s follow-ups{" "}
+                <span className="count-pill">
+                  {
+                    followups.filter(
+                      (x) => !x.completed && x.date === "2026-09-28",
+                    ).length
+                  }
+                </span>
+              </h2>
+              <p className="section-subtitle">
+                A timely conversation makes all the difference.
+              </p>
+            </div>
+            <button
+              className="text-button"
+              onClick={() => navigate("follow-ups")}
+            >
+              View all <ArrowUpRight size={14} />
+            </button>
+          </div>
+          <DataTable
+            columns={[
+              {
+                key: "name",
+                label: "CUSTOMER",
+                render: (r) => (
+                  <div className="person-cell">
+                    <UserAvatar name={r.name} />
+                    <div>
+                      <strong>{r.name}</strong>
+                      <small>{r.service}</small>
+                    </div>
+                  </div>
+                ),
+              },
+              {
+                key: "time",
+                label: "SCHEDULE",
+                render: (r) => (
+                  <div>
+                    <strong>{r.time}</strong>
+                    <small>Today</small>
+                  </div>
+                ),
+              },
+              { key: "purpose", label: "PURPOSE" },
+              {
+                key: "action",
+                label: "",
+                render: (r) => (
+                  <button
+                    className="small-button"
+                    onClick={() => openModal({ type: "followup", record: r })}
+                  >
+                    <Phone size={13} /> Follow up
+                  </button>
+                ),
+              },
+            ]}
+            rows={followups
+              .filter((x) => !x.completed && x.date === "2026-09-28")
+              .slice(0, 3)}
+          />
+        </section>
+        <section className="card pipeline-summary">
+          <div className="section-heading">
+            <h2>Pipeline snapshot</h2>
+            <button
+              className="icon-button"
+              aria-label="Open pipeline"
+              onClick={() => navigate("pipeline")}
+            >
+              <ArrowUpRight size={16} />
+            </button>
+          </div>
+          <div className="pipeline-total">
+            <strong>₹48.6L</strong>
+            <span>across 186 active opportunities</span>
+          </div>
+          <div className="stacked-bar">
+            {[28, 22, 18, 20, 12].map((x, i) => (
+              <span
+                key={i}
+                style={{
+                  width: x + "%",
+                  background: [
+                    "#315d8c",
+                    "#6085ab",
+                    "#c29a58",
+                    "#8fad9f",
+                    "#dce5ef",
+                  ][i],
+                }}
+              />
+            ))}
+          </div>
+          {[
+            ["New leads", 52, "₹12.4L"],
+            ["Contacted", 41, "₹10.2L"],
+            ["Interested", 34, "₹9.8L"],
+            ["Quotation", 37, "₹11.6L"],
+          ].map(([name, count, amount], i) => (
+            <div className="pipeline-line" key={name}>
+              <i
+                style={{
+                  background: ["#315d8c", "#6085ab", "#c29a58", "#8fad9f"][i],
+                }}
+              />
+              <span>{name}</span>
+              <small>{count}</small>
+              <strong>{amount}</strong>
+            </div>
+          ))}
+        </section>
+      </div>
+      <div className="workspace-footer">
+        <span>
+          <span className="live-dot" /> All systems operational
+        </span>
+        <span>ENTRAIN CRM · Your growth, in focus.</span>
+      </div>
+    </>
+  );
+}
