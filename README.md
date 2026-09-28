@@ -27,3 +27,5 @@ Mock leads, follow-ups, targets, and role selection persist in sessionStorage fo
 - `src/app/[[...slug]]/page.js`: workspace route entry. The root layout maintains the interactive workspace across navigation.
 
 Replace mock state operations with authenticated service adapters during the backend phase. Client-side role gating is a demo UI feature, not security enforcement. Analytics and historical periods use illustrative mock series. Integration settings intentionally remain placeholders.
+
+Lead demo records now use culinary academy courses. The Add Lead form assigns a sales executive and records sale and advance amounts in INR; lead list and details display both. Existing session demo leads are normalized from the earlier generic sample services on reload.
