@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ENTRAIN CRM
 
-## Getting Started
+Frontend-only CRM built with Next.js 16, React 19, Tailwind CSS 4, Lucide React, and Recharts.
 
-First, run the development server:
+## Run
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- `npm install`
+- `npm run dev`
+- `npm run build` for the production check.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open the URL printed by Next.js. The preview currently uses port 3001 because another application occupies port 3000.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Demo
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open the profile menu to switch between all six roles. Navigation and route guards reflect the selected role. Sales executives see their own leads; team leaders see Team Alpha. The leaderboard is available to everyone.
 
-## Learn More
+Mock leads, follow-ups, targets, and role selection persist in sessionStorage for the current tab. No database, authentication, telephony, messaging, or external service is connected. Call and recording actions explicitly show demo notices. Exports download mock records as CSV or an Excel-readable HTML table.
 
-To learn more about Next.js, take a look at the following resources:
+## Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `src/lib/data.js`: mock entities, permissions, currency helpers, and ranking function.
+- `src/components/ui.js`: shared display, input, table, modal, timeline, and feedback components.
+- `src/components/crm-app.js`: persistent workspace shell, role access, navigation, demo state, and forms.
+- `src/components/dashboard.js`: dashboard, target tracking, leaderboard, and charts.
+- `src/components/sales-pages.js`: leads, detail history, follow-ups, pipeline, customers, and calls.
+- `src/components/management-pages.js`: targets, team, analytics, users, permissions, tasks, and settings.
+- `src/app/[[...slug]]/page.js`: workspace route entry. The root layout maintains the interactive workspace across navigation.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Replace mock state operations with authenticated service adapters during the backend phase. Client-side role gating is a demo UI feature, not security enforcement. Analytics and historical periods use illustrative mock series. Integration settings intentionally remain placeholders.
