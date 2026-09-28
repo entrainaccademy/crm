@@ -114,3 +114,326 @@ td small { font-size: 13px; }
 .modal > form > .form-grid { flex: 1; min-height: 0; overflow-y: auto; }
 .modal-footer { flex-shrink: 0; }
 .field-hint { color: #829099; font-size: 12px; font-weight: 400; line-height: 1.4; }
+
+/* Lead list scrolls within its card; toolbar and pagination remain in view. */
+.main:has(.leads-table-card) {
+  height: calc(100dvh - var(--header));
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.main:has(.leads-table-card) > .breadcrumb,
+.main:has(.leads-table-card) > .page-header {
+  flex-shrink: 0;
+}
+.leads-table-card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.leads-table-card > .table-toolbar,
+.leads-table-card > .filter-row,
+.leads-table-card > .pagination {
+  flex-shrink: 0;
+}
+.leads-table-card > .table-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.leads-table-card thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.leads-table-card thead th {
+  background: #fafbfc;
+}
+
+/* Shared scrolling for every data table. */
+.table-scroll {
+  max-height: min(58dvh, 640px);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.table-scroll thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.table-scroll thead th { background: #fafbfc; }
+.table-scroll:focus-visible { outline: 2px solid var(--teal); outline-offset: -2px; }
+
+/* Single-table screens keep their controls and table frame within the viewport. */
+.main.table-page {
+  height: calc(100dvh - var(--header));
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.main.table-page > .breadcrumb,
+.main.table-page > .page-header,
+.main.table-page > .stats-grid { flex-shrink: 0; }
+.main.table-page > .card {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.main.table-page > .card > .table-scroll,
+.leads-table-card > .table-scroll {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+.main.table-page > .card > .table-toolbar,
+.main.table-page > .card > .tabs,
+.main.table-page > .card > .pagination { flex-shrink: 0; }
+
+@media (max-width: 760px) {
+  /* Keep the calls table usable beneath its six compact summary cards. */
+  .main.table-page > .stats-grid.six {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding-bottom: 8px;
+    gap: 10px;
+  }
+  .main.table-page > .stats-grid.six > .stat-card {
+    flex: 0 0 155px;
+  }
+}
+
+/* Pipeline workspace: stage headers stay in view while each column scrolls. */
+.main:has(.pipeline-workspace) {
+  height: calc(100dvh - var(--header));
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.main:has(.pipeline-workspace) > .breadcrumb,
+.main:has(.pipeline-workspace) > .page-header { flex-shrink: 0; }
+.pipeline-workspace {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.pipeline-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 13px 0 17px;
+  flex-shrink: 0;
+}
+.pipeline-toolbar-summary { display: flex; flex-direction: column; gap: 4px; }
+.pipeline-toolbar-summary strong { font-size: 14px; color: #26363d; }
+.pipeline-toolbar-summary span { font-size: 12px; color: #8a989d; }
+.pipeline-toolbar-filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pipeline-toolbar-filters .search-input { min-width: 230px; background: white; }
+.pipeline-toolbar-filters select { max-width: 180px; min-height: 38px; }
+.kanban {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  gap: 13px;
+  padding: 0 0 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-color: #bdc7c8 transparent;
+}
+.kanban:focus-visible { outline: 2px solid var(--teal); outline-offset: -2px; }
+.kanban-column {
+  flex: 0 0 286px;
+  min-width: 286px;
+  max-width: 286px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: #f1f4f4;
+  border: 1px solid #e2e8e8;
+  transition: border-color .15s, background-color .15s;
+}
+.kanban-column.drag-over { border-color: var(--stage-color); background: #eaf2ef; }
+.kanban-column-header {
+  flex-shrink: 0;
+  padding: 15px 14px 13px;
+  border-bottom: 1px solid #e2e8e8;
+}
+.kanban-column-header > div { display: flex; align-items: center; gap: 8px; }
+.kanban-column-header h3 { padding: 0; font-size: 14px; color: #33434b; }
+.stage-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--stage-color); }
+.stage-count { margin-left: auto; border-radius: 5px; background: #fff; color: #718188; min-width: 22px; text-align: center; padding: 3px 5px; font-size: 11px; }
+.kanban-column-header p { padding: 7px 0 0 15px; color: #8b989f; font-size: 12px; }
+.kanban-column-body { flex: 1; min-height: 0; overflow-y: auto; padding: 11px; scrollbar-color: #c4cecf transparent; scrollbar-width: thin; }
+.kanban-empty { border: 1px dashed #d4dedf; border-radius: 7px; padding: 25px 12px; color: #99a5aa; font-size: 12px; text-align: center; background: #fafbfb; }
+.kanban-card { margin-bottom: 10px; padding: 13px; cursor: grab; }
+.kanban-card:active { cursor: grabbing; }
+.kanban-card.dragging { opacity: .5; }
+.kanban-card-top { align-items: center; gap: 8px; }
+.priority { font-size: 11px; padding: 4px 6px; }
+.kanban-source { font-size: 11px; color: #89979e; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kanban-card .lead-name { justify-content: flex-start; text-align: left; white-space: normal; padding: 13px 0 2px; font-size: 14px; font-weight: 650; color: #31424a; }
+.kanban-card .lead-name:hover { color: var(--teal); background: transparent; }
+.kanban-phone { color: #95a1a8; font-size: 12px; }
+.kanban-course { min-height: 38px; margin-top: 13px; color: #667780; font-size: 13px; line-height: 1.45; }
+.kanban-card-money { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid #edf0f1; font-size: 11px; color: #929fa5; }
+.kanban-card-money strong { color: #384e57; font-size: 13px; font-weight: 600; }
+.kanban-owner { display: flex; align-items: center; gap: 7px; padding: 10px 0; color: #6f7e85; font-size: 12px; }
+.kanban-owner .avatar { width: 22px; height: 22px; font-size: 8px; }
+.kanban-owner svg { margin-left: auto; color: #b1bdc1; }
+.kanban-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 5px; border-top: 1px solid #edf0f1; padding-top: 10px; }
+.kanban-card-footer span { display: inline-flex; align-items: center; gap: 5px; color: #8b999e; font-size: 11px; }
+.kanban-card-footer select { width: 115px; max-width: 115px; min-height: 29px; padding: 4px 17px 4px 6px; font-size: 11px; }
+@media (max-width: 760px) {
+  .pipeline-toolbar { gap: 11px; }
+  .pipeline-toolbar-filters { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); width: 100%; }
+  .pipeline-toolbar-filters .search-input { grid-column: 1 / -1; min-width: 0; }
+  .pipeline-toolbar-filters select { max-width: none; width: 100%; }
+  .kanban-column { flex-basis: min(82vw, 300px); min-width: min(82vw, 300px); max-width: min(82vw, 300px); }
+}
+
+/* ENTRAIN Academy theme: navy, warm gold, and restrained status colors. */
+:root {
+  --ink: #26364a;
+  --muted: #697b8f;
+  --border: #e0e7ef;
+  --teal: #315d8c;
+}
+body { background: #f5f7fa; }
+button { border-color: #d9e2ec; color: #43576e; }
+button:hover { background: #edf2f8; }
+button:focus-visible, a:focus-visible, input:focus-visible,
+select:focus-visible, textarea:focus-visible { outline-color: #315d8c; }
+input, select, textarea { border-color: #d9e2ec; color: #344c65; }
+.primary { box-shadow: 0 2px 4px #253f661a; }
+.primary:hover { background: #254b75; }
+.navbar { background: #142236; color: #edf2f7; }
+.navbar .nav-divider { background: #33445c; }
+.global-search { background: #20334c; border-color: #344963; color: #aebdd0; }
+.global-search input { color: #f3f6fa; }
+.global-search kbd, .demo-pill { border-color: #42556d; color: #b9c8d8; }
+.notification-button i, .nav-new, .live-dot { background: #c29a58; }
+.profile-button .avatar { background: #e9edf3; color: #315375; }
+.sidebar { background: #f1f4f8; border-right-color: #dce5ef; }
+.workspace-switch { border-bottom-color: #dce5ef; }
+.workspace-icon { color: #ad8041; border-color: #e9d9bf; }
+.nav-group-label { color: #72839a; }
+.nav-item { color: #51647b; }
+.nav-item svg { color: #7e91a7; }
+.nav-item:hover { background: #e7edf5; }
+.nav-item.active, .settings-layout nav button.active {
+  background: #dfe9f5;
+  color: #244e7a;
+}
+.nav-item.active { box-shadow: inset 3px 0 #b78b4d; }
+.nav-item.active svg { color: #315d8c; }
+.segments button.selected { background: #e5eef8; color: #285681; }
+.breadcrumb > span { color: #375d87; }
+.card, .stat-card { box-shadow: 0 2px 8px #28426408; }
+.stat-card { position: relative; overflow: hidden; border-top: 2px solid #c7d8e9; }
+.stats-grid .stat-card:nth-child(4n + 2) { border-top-color: #d9bd8d; }
+.stats-grid .stat-card:nth-child(4n + 3) { border-top-color: #afd2c4; }
+.stats-grid .stat-card:nth-child(4n + 4) { border-top-color: #dcc6a9; }
+.stat-label svg { color: #507baa; }
+.stats-grid .stat-card:nth-child(4n + 2) .stat-label svg,
+.stats-grid .stat-card:nth-child(4n + 4) .stat-label svg { color: #b4874b; }
+.stats-grid .stat-card:nth-child(4n + 3) .stat-label svg { color: #648f80; }
+.stat-card > strong, .revenue-line > strong { color: #203953; }
+.positive, .stat-change > span { color: #3b8b70; }
+.revenue-line .positive { background: #eaf5ef; }
+.section-heading h2 > svg { color: #b38c52; }
+.chart-legend i { background: #315d8c; }
+.chart-legend span:last-child i { background: #c29a58; }
+.progress { background: #e8edf4; }
+.progress > div { background: #426f9e; }
+.leader-progress > strong { color: #315d8c; }
+.leaderboard-row:nth-child(-n + 4) { background: #fcfaf6; }
+.top-rank { color: #a5793d; }
+.card-link { background: #f8fafc; color: #315d8c; }
+.card-link:hover { background: #eef3f9; }
+.target-note { background: #eef3f9; color: #3e648b; }
+.target-caption { color: #61758a; }
+.table-scroll thead th, .leads-table-card thead th { background: #f6f8fb; color: #60758c; }
+.table-scroll tbody tr:hover { background: #f8fafd; }
+.badge-new, .badge-contacted { background: #e8f0fa; color: #436d9a; }
+.badge-follow-up, .badge-scheduled, .badge-quotation,
+.badge-in-progress, .badge-pending { background: #fbf2e4; color: #9a7137; }
+.tabs button.active { border-bottom-color: #b88c4b; color: #315d8c; }
+.kanban-column { background: #f1f5f9; border-color: #dce5ee; }
+.kanban-column-header { border-bottom-color: #dce5ee; }
+.kanban-column.drag-over { background: #e8f0f9; }
+.kanban-empty { background: #fafbfd; border-color: #d5e0eb; }
+.pipeline-toolbar-summary strong, .kanban-column-header h3,
+.kanban-card .lead-name, .kanban-card-money strong { color: #2d4660; }
+.toast { background: #203b59; }
+@media (max-width: 760px) {
+  .global-search:focus-within { background: #20334c; }
+}
+
+/* The supplied PNG is already transparent; let the navbar show through it. */
+.brand-logo { background: transparent; border-radius: 0; padding: 0; }
+.navbar .brand-logo { filter: brightness(2.25) saturate(.85); }
+.workspace-icon { background: transparent; border: 0; }
+.dashboard-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1000px) {
+  .dashboard-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.dashboard-period-row { justify-content: flex-end; }
+.dashboard-period-row > .muted { order: -1; margin-right: auto; }
+
+/* Glass treatment is limited to the six Business Overview cards. */
+.dashboard-stats {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.dashboard-stats .stat-card {
+  background: linear-gradient(145deg, rgba(229, 239, 250, .9), rgba(255, 255, 255, .82));
+  border-color: #dbe7f3;
+  backdrop-filter: blur(16px) saturate(125%);
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
+  box-shadow: 0 5px 18px #263f5b0d, inset 0 1px rgba(255, 255, 255, .9);
+}
+.dashboard-stats .stat-card:nth-child(1) {
+  background: linear-gradient(145deg, rgba(225, 241, 244, .93), rgba(255, 255, 255, .82));
+  border-color: #cfe3e8;
+  border-top-color: #79aeb7;
+}
+.dashboard-stats .stat-card:nth-child(1) .stat-label svg { color: #4e8995; }
+.dashboard-stats .stat-card:nth-child(2) {
+  background: linear-gradient(145deg, rgba(228, 237, 251, .94), rgba(255, 255, 255, .82));
+  border-color: #d0dff1;
+  border-top-color: #84a8d3;
+}
+.dashboard-stats .stat-card:nth-child(2) .stat-label svg { color: #4e77a9; }
+.dashboard-stats .stat-card:nth-child(4) {
+  background: linear-gradient(145deg, rgba(252, 232, 235, .95), rgba(255, 255, 255, .84));
+  border-color: #f0d5da;
+  border-top-color: #d58a96;
+}
+.dashboard-stats .stat-card:nth-child(4) .stat-label svg,
+.dashboard-stats .stat-card:nth-child(4) .stat-change > span { color: #ad5362 !important; }
+.dashboard-stats .stat-card:nth-child(4) > strong { color: #783d49; }
+.dashboard-stats .stat-card:nth-child(3) {
+  background: linear-gradient(145deg, rgba(226, 243, 235, .92), rgba(255, 255, 255, .82));
+  border-color: #d6e9df;
+}
+.dashboard-stats .stat-card:nth-child(6) {
+  background: linear-gradient(145deg, rgba(238, 235, 248, .92), rgba(255, 255, 255, .82));
+  border-color: #e0dcec;
+}
+.dashboard-stats .stat-card > strong { color: #1c3855; }
+@media (max-width: 760px) {
+  .dashboard-stats { gap: 9px; }
+}
