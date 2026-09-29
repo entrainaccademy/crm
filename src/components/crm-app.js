@@ -448,17 +448,19 @@ export default function CRMApp() {
         <a
           className="brand"
           href="/"
+          aria-label="ENTRAIN Academy CRM"
           onClick={(e) => {
             e.preventDefault();
             navigate("dashboard");
           }}
         >
-          <img
-            className="brand-logo"
-            src="/images/entrain-logo.png"
-            alt="ENTRAIN Academy"
-          />
-          <span className="crm-suffix">CRM</span>
+          <span className="brand-crest">
+            <img src="/images/entrain-logo.png" alt="" />
+          </span>
+          <span className="brand-wordmark">
+            <strong>ENTRAIN</strong>
+            <span>ACADEMY</span>
+          </span>
         </a>
         <div className="nav-divider" />
         <span className="workspace-name">
@@ -772,9 +774,7 @@ export default function CRMApp() {
                 ) : null}
               </PageHeader>
             )}
-            {(page === "dashboard" ||
-              page === "performance" ||
-              page.includes("reports")) && (
+            {(page === "dashboard" || page.includes("reports")) && (
               <div
                 className={`period-row ${page === "dashboard" ? "dashboard-period-row" : ""}`}
               >
@@ -853,9 +853,7 @@ export default function CRMApp() {
             {page === "customers" && (
               <CustomersPage leads={scopedLeads} navigate={navigate} />
             )}
-            {page === "leaderboard" && (
-              <LeaderboardPage people={people} role={role} />
-            )}
+            {page === "leaderboard" && <LeaderboardPage people={people} />}
             {page === "targets" && (
               <TargetsPage
                 people={people}
@@ -883,6 +881,7 @@ export default function CRMApp() {
                     : people
                 }
                 period={period}
+                onPeriodChange={setPeriod}
                 exportData={exportData}
               />
             )}

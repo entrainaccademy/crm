@@ -55,13 +55,15 @@ export function StatCard({
         {Icon && <Icon size={16} />}
       </div>
       <strong>{value}</strong>
-      <div className="stat-change">
-        <span className={negative ? "negative" : ""}>
-          <ArrowUpRight size={12} />
-          {change || "12.8%"}
-        </span>
-        {showComparison && <small>vs. previous period</small>}
-      </div>
+      {(change || showComparison) && (
+        <div className="stat-change">
+          <span className={negative ? "negative" : ""}>
+            <ArrowUpRight size={12} />
+            {change || "12.8%"}
+          </span>
+          {showComparison && <small>vs. previous period</small>}
+        </div>
+      )}
     </div>
   );
 }

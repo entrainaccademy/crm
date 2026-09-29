@@ -33,16 +33,21 @@ import {
   DataTable,
 } from "./ui";
 import { money, shortMoney, rankExecutives, chartData } from "@/lib/data";
-export function SalesChart({ period = "This Month" }) {
+export function SalesChart({ period = "This Month", salesTotal, targetTotal }) {
   const multiplier =
     period === "Today" ? 0.12 : period === "This Week" ? 0.35 : 1;
+  const lastPoint = chartData.at(-1);
+  const salesScale =
+    salesTotal == null ? 1 : salesTotal / 100000 / lastPoint.sales;
+  const targetScale =
+    targetTotal == null ? 1 : targetTotal / 100000 / lastPoint.target;
   return (
     <ResponsiveContainer width="100%" height={225}>
       <AreaChart
         data={chartData.map((x) => ({
           ...x,
-          sales: Math.round(x.sales * multiplier),
-          target: Math.round(x.target * multiplier),
+          sales: Number((x.sales * multiplier * salesScale).toFixed(1)),
+          target: Number((x.target * multiplier * targetScale).toFixed(1)),
         }))}
         margin={{ top: 15, right: 10, left: -25, bottom: 0 }}
       >

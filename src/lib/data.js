@@ -237,7 +237,7 @@ export const notifications = [
   "You have 5 overdue follow-ups",
   "New lead assigned to you: Fatima Ahmed",
   "Mohammed reached 124% of monthly target",
-  "Team Alpha reached its monthly target",
+  "Niyas reached 102% of his monthly target",
   "Lead converted successfully: Meera Iyer",
 ];
 export const access = {
